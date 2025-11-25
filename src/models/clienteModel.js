@@ -65,11 +65,11 @@ const clienteModel = {
 
             await pool.request()
                 .input("nomeCliente", sql.VarChar(100), nomeCliente)
-                .input("cpfCliente", sql.VarChar(14), cpfCliente)
+                .input("cpfCliente", sql.VarChar(14), cpfCliente)       
                 .input("telefone", sql.VarChar(20), telefone)
                 .input("email", sql.VarChar(100), email)
                 .input("logradouro", sql.VarChar(120), logradouro)
-                .input("numero", sql.Va
+                .input("numero", sql.Va)
                 .query(querySQL);
 
         } catch (error) {
