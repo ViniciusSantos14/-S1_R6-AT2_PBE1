@@ -1,16 +1,17 @@
 const { clienteModel } = require("../models/clienteModel");
 
 const clienteController = {
+
   listarClientes: async (req, res) => {
     try {
-      const { idCliente } = req.query;
+      const { id_cliente } = req.query;
 
-      if (idCliente) {
-        if (idCliente.length != 36) {
-          return res.status(400).json({ erro: "id do cliente invalido" });
+      if (id_cliente) {
+        if (id_cliente.length !== 36) {
+          return res.status(400).json({ erro: "ID inválido" });
         }
 
-        const cliente = await clienteModel.buscarUm(idCliente);
+        const cliente = await clienteModel.buscarUm(id_cliente);
         return res.status(200).json(cliente);
       }
 
@@ -19,7 +20,7 @@ const clienteController = {
 
     } catch (error) {
       console.error("Erro ao listar clientes", error);
-      res.status(500).json({ Message: "Erro ao buscar cliente" });
+      res.status(500).json({ erro: "Erro ao buscar clientes" });
     }
   },
 
@@ -27,9 +28,10 @@ const clienteController = {
     try {
       const {
         nomeCliente,
+        email,
+        telefone,
+        endereco,
         cpfCliente,
-        telefoneCliente,
-        emailCliente,
         logradouro,
         numero,
         bairro,
@@ -39,31 +41,24 @@ const clienteController = {
       } = req.body;
 
       if (
-        nomeCliente == undefined ||
-        cpfCliente == undefined ||
-        telefoneCliente == undefined ||
-        emailCliente == undefined ||
-        logradouro == undefined ||
-        numero == undefined ||
-        bairro == undefined ||
-        cidade == undefined ||
-        estado == undefined ||
-        cep == undefined
+        !nomeCliente || !email || !telefone || !endereco || !cpfCliente ||
+        !logradouro || !numero || !bairro || !cidade || !estado || !cep
       ) {
-        return res.status(400).json({ erro: "Campos obrigatorios não preenchidos!" });
+        return res.status(400).json({ erro: "Campos obrigatórios não preenchidos!" });
       }
 
-      const result = await clienteModel.buscarPorCPF(cpfCliente);
+      const existeCPF = await clienteModel.buscarPorCPF(cpfCliente);
 
-      if (result.length > 0) {
-        return res.status(409).json({ message: "CPF já cadastrado" });
+      if (existeCPF.length > 0) {
+        return res.status(409).json({ erro: "CPF já cadastrado!" });
       }
 
       await clienteModel.inserirCliente(
         nomeCliente,
+        email,
+        telefone,
+        endereco,
         cpfCliente,
-        telefoneCliente,
-        emailCliente,
         logradouro,
         numero,
         bairro,
@@ -72,13 +67,14 @@ const clienteController = {
         cep
       );
 
-      res.status(201).json({ message: "Cliente cadastrado com sucesso!" });
+      res.status(201).json({ mensagem: "Cliente cadastrado com sucesso!" });
 
     } catch (error) {
-      console.error("Erro ao fazer cadastro!", error);
-      res.status(500).json({ erro: "Erro no servidor ao fazer novo cadastro!" });
+      console.error("Erro ao cadastrar cliente", error);
+      res.status(500).json({ erro: "Erro no servidor ao cadastrar cliente!" });
     }
   }
+
 };
 
 module.exports = { clienteController };

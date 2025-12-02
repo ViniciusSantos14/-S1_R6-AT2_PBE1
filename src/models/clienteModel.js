@@ -5,8 +5,7 @@ const clienteModel = {
     buscarTodos: async () => {
         try {
             const pool = await getConnection();
-            const sqlQuery = "SELECT * FROM Clientes;";
-            const result = await pool.request().query(sqlQuery);
+            const result = await pool.request().query("SELECT * FROM Clientes;");
             return result.recordset;
         } catch (error) {
             console.error("Erro ao buscar clientes", error);
@@ -14,17 +13,17 @@ const clienteModel = {
         }
     },
 
-    buscarUm: async (idCliente) => {
+    buscarUm: async (id_cliente) => {
         try {
             const pool = await getConnection();
-            const querySQL = `
-                SELECT * FROM Clientes 
-                WHERE idCliente = @idCliente
+            const query = `
+                SELECT * FROM Clientes
+                WHERE id_cliente = @id_cliente
             `;
 
             const result = await pool.request()
-                .input("idCliente", sql.UniqueIdentifier, idCliente)
-                .query(querySQL);
+                .input("id_cliente", sql.UniqueIdentifier, id_cliente)
+                .query(query);
 
             return result.recordset;
         } catch (error) {
@@ -36,14 +35,14 @@ const clienteModel = {
     buscarPorCPF: async (cpfCliente) => {
         try {
             const pool = await getConnection();
-            const querySQL = `
-                SELECT * FROM Clientes 
-                WHERE cpfCliente = @cpfCliente;
+            const query = `
+                SELECT * FROM Clientes
+                WHERE cpfCliente = @cpfCliente
             `;
 
             const result = await pool.request()
                 .input("cpfCliente", sql.VarChar(14), cpfCliente)
-                .query(querySQL);
+                .query(query);
 
             return result.recordset;
         } catch (error) {
@@ -52,25 +51,42 @@ const clienteModel = {
         }
     },
 
-    inserirCliente: async (nomeCliente, cpfCliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep) => {
+    inserirCliente: async (
+        nomeCliente,
+        email,
+        telefone,
+        endereco,
+        cpfCliente,
+        logradouro,
+        numero,
+        bairro,
+        cidade,
+        estado,
+        cep
+    ) => {
         try {
             const pool = await getConnection();
 
-            const querySQL = `
+            const query = `
                 INSERT INTO Clientes
-                (nomeCliente, cpfCliente, telefone, email, logradouro, numero, bairro, cidade, estado, cep)
+                (nomeCliente, email, telefone, endereco, cpfCliente, logradouro, numero, bairro, cidade, estado, cep)
                 VALUES
-                (@nomeCliente, @cpfCliente, @telefone, @email, @logradouro, @numero, @bairro, @cidade, @estado, @cep)
+                (@nomeCliente, @email, @telefone, @endereco, @cpfCliente, @logradouro, @numero, @bairro, @cidade, @estado, @cep)
             `;
 
             await pool.request()
                 .input("nomeCliente", sql.VarChar(100), nomeCliente)
-                .input("cpfCliente", sql.VarChar(14), cpfCliente)       
-                .input("telefone", sql.VarChar(20), telefone)
                 .input("email", sql.VarChar(100), email)
+                .input("telefone", sql.VarChar(20), telefone)
+                .input("endereco", sql.VarChar(120), endereco)
+                .input("cpfCliente", sql.VarChar(14), cpfCliente)
                 .input("logradouro", sql.VarChar(120), logradouro)
-                .input("numero", sql.Va)
-                .query(querySQL);
+                .input("numero", sql.VarChar(10), numero)
+                .input("bairro", sql.VarChar(60), bairro)
+                .input("cidade", sql.VarChar(60), cidade)
+                .input("estado", sql.Char(2), estado)
+                .input("cep", sql.VarChar(10), cep)
+                .query(query);
 
         } catch (error) {
             console.error("Erro ao inserir cliente", error);
@@ -78,6 +94,7 @@ const clienteModel = {
         }
     }
 
-}
+};
 
 module.exports = { clienteModel };
+
