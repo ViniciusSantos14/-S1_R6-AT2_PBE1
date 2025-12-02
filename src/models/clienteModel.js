@@ -20,11 +20,9 @@ const clienteModel = {
                 SELECT * FROM Clientes
                 WHERE id_cliente = @id_cliente
             `;
-
             const result = await pool.request()
-                .input("id_cliente", sql.UniqueIdentifier, id_cliente)
+                .input("id_cliente", sql.Int, id_cliente)
                 .query(query);
-
             return result.recordset;
         } catch (error) {
             console.error("Erro ao buscar cliente", error);
@@ -39,11 +37,9 @@ const clienteModel = {
                 SELECT * FROM Clientes
                 WHERE cpfCliente = @cpfCliente
             `;
-
             const result = await pool.request()
                 .input("cpfCliente", sql.VarChar(14), cpfCliente)
                 .query(query);
-
             return result.recordset;
         } catch (error) {
             console.error("Erro ao buscar CPF", error);
@@ -66,14 +62,12 @@ const clienteModel = {
     ) => {
         try {
             const pool = await getConnection();
-
             const query = `
                 INSERT INTO Clientes
                 (nomeCliente, email, telefone, endereco, cpfCliente, logradouro, numero, bairro, cidade, estado, cep)
                 VALUES
                 (@nomeCliente, @email, @telefone, @endereco, @cpfCliente, @logradouro, @numero, @bairro, @cidade, @estado, @cep)
             `;
-
             await pool.request()
                 .input("nomeCliente", sql.VarChar(100), nomeCliente)
                 .input("email", sql.VarChar(100), email)
@@ -87,9 +81,76 @@ const clienteModel = {
                 .input("estado", sql.Char(2), estado)
                 .input("cep", sql.VarChar(10), cep)
                 .query(query);
-
         } catch (error) {
             console.error("Erro ao inserir cliente", error);
+            throw error;
+        }
+    },
+
+    atualizarCliente: async (
+        id_cliente,
+        nomeCliente,
+        email,
+        telefone,
+        endereco,
+        cpfCliente,
+        logradouro,
+        numero,
+        bairro,
+        cidade,
+        estado,
+        cep
+    ) => {
+        try {
+            const pool = await getConnection();
+            const query = `
+                UPDATE Clientes
+                SET
+                    nomeCliente = @nomeCliente,
+                    email = @email,
+                    telefone = @telefone,
+                    endereco = @endereco,
+                    cpfCliente = @cpfCliente,
+                    logradouro = @logradouro,
+                    numero = @numero,
+                    bairro = @bairro,
+                    cidade = @cidade,
+                    estado = @estado,
+                    cep = @cep
+                WHERE id_cliente = @id_cliente
+            `;
+            await pool.request()
+                .input("id_cliente", sql.Int, id_cliente)
+                .input("nomeCliente", sql.VarChar(100), nomeCliente)
+                .input("email", sql.VarChar(100), email)
+                .input("telefone", sql.VarChar(20), telefone)
+                .input("endereco", sql.VarChar(120), endereco)
+                .input("cpfCliente", sql.VarChar(14), cpfCliente)
+                .input("logradouro", sql.VarChar(120), logradouro)
+                .input("numero", sql.VarChar(10), numero)
+                .input("bairro", sql.VarChar(60), bairro)
+                .input("cidade", sql.VarChar(60), cidade)
+                .input("estado", sql.Char(2), estado)
+                .input("cep", sql.VarChar(10), cep)
+                .query(query);
+        } catch (error) {
+            console.error("Erro ao atualizar cliente", error);
+            throw error;
+        }
+    },
+
+    deletarCliente: async (id_cliente) => {
+        try {
+            const pool = await getConnection();
+            const query = `
+                DELETE FROM Clientes
+                WHERE id_cliente = @id_cliente
+            `;
+            await pool.request()
+                .input("id_cliente", sql.Int, id_cliente)
+                .query(query);
+        } catch (error) {
+            console.error("Erro ao deletar cliente", error);
             throw error;
         }
     }
@@ -97,4 +158,3 @@ const clienteModel = {
 };
 
 module.exports = { clienteModel };
-

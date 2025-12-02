@@ -4,13 +4,9 @@ const pedidoModel = {
     buscarTodos: async () => {
         try {
             const pool = await getConnection();
-
             const sqlQuery = "SELECT * FROM Pedidos;";
-
             const result = await pool.request().query(sqlQuery);
-
             return result.recordset;
-
         } catch (error) {
             console.error("Erro ao buscar pedidos", error);
             throw error;
@@ -20,17 +16,11 @@ const pedidoModel = {
     buscarUm: async (idPedido) => {
         try {
             const pool = await getConnection();
-
-            const querySQL = `
-                SELECT * FROM Pedidos WHERE idPedido = @idPedido
-            `;
-
+            const querySQL = "SELECT * FROM Pedidos WHERE idPedido = @idPedido";
             const result = await pool.request()
-                .input("idPedido", sql.UniqueIdentifier, idPedido)
+                .input("idPedido", sql.Int, idPedido)
                 .query(querySQL);
-
             return result.recordset;
-
         } catch (error) {
             console.error("Erro ao buscar pedido", error);
             throw error;
@@ -48,24 +38,21 @@ const pedidoModel = {
     ) => {
         try {
             const pool = await getConnection();
-
             const querySQL = `
                 INSERT INTO Pedidos
                 (idCliente, dataPedido, tipoEntrega, distanciaKM, pesoKG, valorPorKM, valorPorKG)
                 VALUES
                 (@idCliente, @dataPedido, @tipoEntrega, @distanciaKM, @pesoKG, @valorPorKM, @valorPorKG)
             `;
-
             await pool.request()
-                .input("idCliente", sql.UniqueIdentifier, idCliente)
+                .input("idCliente", sql.Int, idCliente)
                 .input("dataPedido", sql.Date, dataPedido)
                 .input("tipoEntrega", sql.VarChar(10), tipoEntrega)
-                .input("distanciaKM", sql.Decimal(10,2), distanciaKM)
-                .input("pesoKG", sql.Decimal(10,2), pesoKG)
-                .input("valorPorKM", sql.Decimal(10,2), valorPorKM)
-                .input("valorPorKG", sql.Decimal(10,2), valorPorKG)
+                .input("distanciaKM", sql.Decimal(10,2), parseFloat(distanciaKM))
+                .input("pesoKG", sql.Decimal(10,2), parseFloat(pesoKG))
+                .input("valorPorKM", sql.Decimal(10,2), parseFloat(valorPorKM))
+                .input("valorPorKG", sql.Decimal(10,2), parseFloat(valorPorKG))
                 .query(querySQL);
-
         } catch (error) {
             console.error("Erro ao inserir pedido", error);
             throw error;

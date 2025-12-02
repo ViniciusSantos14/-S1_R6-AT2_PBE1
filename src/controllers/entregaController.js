@@ -15,9 +15,9 @@ const entregaController = {
 
     calcularEntrega: async (req, res) => {
         try {
-            const { idPedido } = req.params;
+            const idPedido = parseInt(req.params.idPedido);
 
-            if (!idPedido || idPedido.length !== 36) {
+            if (!idPedido || isNaN(idPedido)) {
                 return res.status(400).json({ error: "id do pedido inválido" });
             }
 
@@ -72,13 +72,11 @@ const entregaController = {
         }
     },
 
-
-
     deletarEntrega: async (req, res) => {
         try {
-            const { idEntrega } = req.params;
+            const idEntrega = parseInt(req.params.idEntrega);
 
-            if (!idEntrega || idEntrega.length !== 36) {
+            if (!idEntrega || isNaN(idEntrega)) {
                 return res.status(400).json({ erro: "id da entrega inválido" });
             }
 
@@ -101,3 +99,4 @@ const entregaController = {
 };
 
 module.exports = { entregaController };
+

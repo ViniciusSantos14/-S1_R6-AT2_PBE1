@@ -6,11 +6,12 @@ const pedidoController = {
       const { idPedido } = req.query;
 
       if (idPedido) {
-        if (idPedido.length != 36) {
-          return res.status(400).json({ erro: "id do pedido invalido" });
+        const id = parseInt(idPedido);
+        if (isNaN(id)) {
+          return res.status(400).json({ erro: "id do pedido inválido" });
         }
 
-        const pedido = await pedidoModel.buscarUm(idPedido);
+        const pedido = await pedidoModel.buscarUm(id);
         return res.status(200).json(pedido);
       }
 
@@ -44,15 +45,16 @@ const pedidoController = {
         valorPorKM == undefined ||
         valorPorKG == undefined
       ) {
-        return res.status(400).json({ erro: "Campos obrigatorios não preenchidos!" });
+        return res.status(400).json({ erro: "Campos obrigatórios não preenchidos!" });
       }
 
-      if (idCliente.length != 36) {
-        return res.status(400).json({ erro: "id do cliente invalido" });
+      const id = parseInt(idCliente);
+      if (isNaN(id)) {
+        return res.status(400).json({ erro: "id do cliente inválido" });
       }
 
       await pedidoModel.inserirPedido(
-        idCliente,
+        id,
         dataPedido,
         tipoEntrega,
         distanciaKM,
